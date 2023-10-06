@@ -46,8 +46,8 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
         IPage iPage = applicationMapper.selectPage(mypage,queryWrapper);
         List<Application> applicationList = iPage.getRecords();
         for(Application application :applicationList){
-            if (application.getClub_id() != null) {
-                application.setClub_name(clubMapper.selectById(application.getClub_id()).getName());
+            if (application.getClubId() != null) {
+                application.setClubName(clubMapper.selectById(application.getClubId()).getName());
             }
 
         }
@@ -59,8 +59,8 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     }
 
     public Response join(Application application){
-        int club_id = application.getClub_id();
-        int applicant_id = application.getApplicant_id();
+        int club_id = application.getClubId();
+        int applicant_id = application.getApplicantId();
         //查询用户id是否在数据库中
         if(userMapper.selectById(applicant_id)==null)   return Response.failure("用户ID不存在，请重新登录或联系管理员！");
         //先查询社团是否存在
@@ -79,7 +79,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     }
     public Response createClub(Application application){
         //首先检查已注册的社团中有无重名
-        JsonNode detail = application.getApplication_detail();
+        JsonNode detail = application.getApplicationDetail();
         String name = detail.get("name").asText();
         if(clubMapper.selectByName(name)!=null)   return Response.failure("此社团名已被使用。请尝试换一个社团名。");
 
@@ -92,7 +92,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
         }
 
 
-        int applicant_id = application.getApplicant_id();
+        int applicant_id = application.getApplicantId();
         //查询用户id是否在数据库中
         if(userMapper.selectById(applicant_id)==null)   return Response.failure("用户ID不存在，请重新登录或联系管理员！");
 
