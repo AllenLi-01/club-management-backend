@@ -4,14 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.club_management.entity.Application;
+import com.example.club_management.entity.User_club;
 import com.example.club_management.mapper.*;
 import com.example.club_management.service.ApplicationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.club_management.service.ClubService;
 import com.example.club_management.utils.Response;
+import com.example.club_management.utils.ResponseCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -34,9 +38,43 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     @Autowired
     UserMapper userMapper;
     @Autowired
+    ClubService clubService;
+    @Autowired
     ActivityMapper activityMapper;
     @Autowired
     MessageMapper messageMapper;
+
+    public Response processJoinApplication(Application application){
+        int id = application.getId();
+        if(applicationMapper.selectById(application.getId())==null) return Response.failure("申请记录不存在！"+application.getId());
+        String status = application.getStatus();
+        int reviewerId = application.getReviewerId();
+        //根据申请编号获取申请详情
+        application = applicationMapper.selectById(id);
+        if(!application.getStatus().equals("PENDING"))  return Response.failure("该申请已被处理！");
+
+        User_club reviewerRecord = userClubMapper
+                .selectOne(new QueryWrapper<User_club>().eq("user_id",reviewerId).eq("club_id",application.getClubId()));
+        if(reviewerRecord==null)  return Response.failure("您不是此社团成员。");
+        String reviewerRole =  reviewerRecord.getRole();
+        if(reviewerRole.equals("STUDENT"))   return Response.failure("您不具有处理此申请的权限。原因：您不是社团管理员。");
+        LocalDateTime applyTime = application.getApplyTime();
+        Response response = new Response();
+        if(status.equals("APPROVED")){//如果批准，则执行加入成员方法
+            User_club userClub = new User_club();
+            userClub.setClubId(application.getClubId()).setUserId(application.getApplicantId()).setJoinTime(applyTime);
+            response =  clubService.addMember(userClub);
+            if (!response.isSuccess()) return response;
+        }else {
+            response.setSuccess(true)
+                    .setCode(ResponseCode.LOGIN_SUCCESS);
+        }
+        application.setReviewTime(LocalDateTime.now())
+                .setReviewerId(reviewerId)
+                .setStatus(status);
+        applicationMapper.updateById(application);
+        return response;
+    }
 
     public Response getApplyList(int userId,int page,int limit){
         Page<Application> mypage = new Page<>(page,limit);

@@ -33,7 +33,7 @@ public class ApplicationController {
         return applicationService.join(application);
     }
 
-    @PostMapping("clubs/create")
+    @PostMapping("/clubs/create")
     public Response createClub(@RequestBody Application application){
         return applicationService.createClub(application);
     }
@@ -43,6 +43,11 @@ public class ApplicationController {
         if(applicationService.removeById(application.getId()))   return Response.ok();
         return Response.failure();
 
+    }
+
+    @PutMapping("/join")
+    public Response processJoinApplication(@RequestBody Application application){
+        return applicationService.processJoinApplication(application);
     }
 
 }
