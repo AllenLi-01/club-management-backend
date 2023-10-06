@@ -28,6 +28,9 @@ public class User_club implements Serializable {
     private Integer clubId;
 
     @TableField(exist = false)
+    private String userName;
+
+    @TableField(exist = false)
     private String clubName;
 
     private String role;

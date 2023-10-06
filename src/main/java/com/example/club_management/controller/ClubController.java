@@ -41,6 +41,12 @@ public class ClubController {
         return clubService.getType();
     }
 
+    @GetMapping("/members")
+    public Response getMemberListByClubId(@RequestParam("id") int id,@RequestParam("page") int page,@RequestParam("limit") int limit){
+        return clubService.getMemberListByClubId(id,page,limit);
+    }
+
+
 
     //测试类，给我啥返回啥
     @PostMapping("/test")

@@ -28,4 +28,5 @@ public interface ClubService extends IService<Club> {
     Response deleteMember(int admin_id,int mem_id,int club_id);
 
     Response checkUserJoinedClub(int userId,int clubId);
+    Response getMemberListByClubId(int id,int page,int limit);
 }
