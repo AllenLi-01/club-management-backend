@@ -38,8 +38,7 @@ public class ClubServiceImpl extends ServiceImpl<ClubMapper, Club> implements Cl
     ApplicationMapper applicationMapper;
     @Autowired
     UserMapper userMapper;
-    @Autowired
-    ApplicationService applicationService;
+
     @Autowired
     ActivityMapper activityMapper;
     @Autowired
@@ -48,8 +47,9 @@ public class ClubServiceImpl extends ServiceImpl<ClubMapper, Club> implements Cl
     public Response addMember(User_club userClub){
         //检查有没有userId、clubId都符合的字段
         if(userClubMapper.checkJoined(userClub.getUserId(),userClub.getClubId())!=null) return Response.failure("该成员已加入社团");
-        userClubService.save(userClub);
         userClub.setRole("STUDENT");
+        userClubService.save(userClub);
+
         return Response.ok();
     }
 
