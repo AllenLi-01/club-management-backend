@@ -25,8 +25,6 @@ public class Response {
     private String message;
     private Map<String,Object> data = new HashMap<String,Object>();
 
-    //把构造方法私有
-    private Response(){};
     public Response data(String string, Object object){
         this.data.put(string,object);
         return this;
