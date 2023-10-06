@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.ibatis.type.JdbcType;
 
 /**
  * <p>
@@ -36,25 +35,25 @@ public class Application implements Serializable {
 
     private String type;
 
-    private Integer applicant_id;
+    private Integer applicantId;
 
-    private Integer club_id;
+    private Integer clubId;
 
     private String status;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    private LocalDateTime apply_time;
+    private LocalDateTime applyTime;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    private LocalDateTime review_time;
+    private LocalDateTime reviewTime;
 
-    private Integer reviewer_id;
+    private Integer reviewerId;
 
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private JsonNode application_detail;
+    private JsonNode applicationDetail;
 
     @TableField(exist = false)
-    private String club_name;
+    private String clubName;
 
 
 }

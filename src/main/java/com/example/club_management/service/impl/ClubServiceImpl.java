@@ -1,13 +1,16 @@
 package com.example.club_management.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.club_management.entity.Application;
 import com.example.club_management.entity.Club;
+import com.example.club_management.entity.User_club;
 import com.example.club_management.mapper.*;
 import com.example.club_management.service.ApplicationService;
 import com.example.club_management.service.ClubService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.club_management.service.User_clubService;
 import com.example.club_management.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,15 +33,41 @@ public class ClubServiceImpl extends ServiceImpl<ClubMapper, Club> implements Cl
     @Autowired
     User_clubMapper userClubMapper;
     @Autowired
+    User_clubService userClubService;
+    @Autowired
     ApplicationMapper applicationMapper;
     @Autowired
     UserMapper userMapper;
-    @Autowired
-    ApplicationService applicationService;
+
     @Autowired
     ActivityMapper activityMapper;
     @Autowired
     MessageMapper messageMapper;
+
+    public Response addMember(User_club userClub){
+        //检查有没有userId、clubId都符合的字段
+        if(userClubMapper.checkJoined(userClub.getUserId(),userClub.getClubId())!=null) return Response.failure("该成员已加入社团");
+        userClub.setRole("STUDENT");
+        userClubService.save(userClub);
+
+        return Response.ok();
+    }
+
+    public Response getMemberListByClubId(int id,int page,int limit){
+        Page<User_club> mypage = new Page<>(page,limit);
+        QueryWrapper<User_club> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("club_id",id);
+        IPage iPage = userClubMapper.selectPage(mypage,queryWrapper);
+        List<User_club> list = iPage.getRecords();
+        for(User_club uc: list){
+            uc.setUserName(userMapper.selectById(uc.getUserId()).getName());
+        }
+
+        Map<String,Object> resMap = new HashMap<>();
+        resMap.put("total",iPage.getTotal());
+        resMap.put("items",list);
+        return Response.ok().data(resMap);
+    }
 
     public Response getList(int page, int limit,int userId){
         Page<Club> mypage = new Page<>(page,limit);
