@@ -10,6 +10,7 @@ import com.example.club_management.mapper.*;
 import com.example.club_management.service.ApplicationService;
 import com.example.club_management.service.ClubService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.club_management.service.User_clubService;
 import com.example.club_management.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,8 @@ public class ClubServiceImpl extends ServiceImpl<ClubMapper, Club> implements Cl
     @Autowired
     User_clubMapper userClubMapper;
     @Autowired
+    User_clubService userClubService;
+    @Autowired
     ApplicationMapper applicationMapper;
     @Autowired
     UserMapper userMapper;
@@ -41,6 +44,14 @@ public class ClubServiceImpl extends ServiceImpl<ClubMapper, Club> implements Cl
     ActivityMapper activityMapper;
     @Autowired
     MessageMapper messageMapper;
+
+    public Response addMember(User_club userClub){
+        //检查有没有userId、clubId都符合的字段
+        if(userClubMapper.checkJoined(userClub.getUserId(),userClub.getClubId())!=null) return Response.failure("该成员已加入社团");
+        userClubService.save(userClub);
+        userClub.setRole("STUDENT");
+        return Response.ok();
+    }
 
     public Response getMemberListByClubId(int id,int page,int limit){
         Page<User_club> mypage = new Page<>(page,limit);

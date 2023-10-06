@@ -3,7 +3,11 @@ package com.example.club_management.service;
 import com.example.club_management.entity.Application;
 import com.example.club_management.entity.Club;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.club_management.entity.User_club;
 import com.example.club_management.utils.Response;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -29,4 +33,12 @@ public interface ClubService extends IService<Club> {
 
     Response checkUserJoinedClub(int userId,int clubId);
     Response getMemberListByClubId(int id,int page,int limit);
+
+    /**
+     * 向目标社团添加新成员
+     *
+     * @param userClub
+     * @return {@link Response}
+     */
+    Response addMember(User_club userClub);
 }
